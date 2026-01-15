@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "sheffield-rocks",
+    "slug": "sheffield-rocks",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo.png",
+    "scheme": "sheffield-rocks",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.wpoynter.sheffieldrocks",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby bus stops."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.wpoynter.sheffieldrocks"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/skyline.png",
+          "imageWidth": 320,
+          "resizeMode": "contain",
+          "backgroundColor": "#f4f1ec",
+          "dark": {
+            "backgroundColor": "#0b1220"
+          }
+        }
+      ],
+      "expo-sqlite"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "10596453-850d-474a-a7b8-d96bc52a1cfc"
+      }
+    },
+    "owner": "wpoynter",
+    "updates": {
+      "url": "https://u.expo.dev/10596453-850d-474a-a7b8-d96bc52a1cfc"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
+  }
+}
