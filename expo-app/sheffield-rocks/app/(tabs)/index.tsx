@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
@@ -15,20 +16,34 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { dataUrl } from '@/constants/data';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 type BusStop = {
   id: string;
   name: string;
-  address: string;
+  code: string | null;
+  area: string | null;
   distanceMeters: number;
-  routes: string[];
+};
+
+type StopRow = {
+  stop_id: string;
+  name: string;
+  code: string | null;
+  area: string | null;
+  lat: number;
+  lon: number;
 };
 
 type PermissionState = 'unknown' | 'granted' | 'denied';
 
+type FeedStatus = 'idle' | 'loading' | 'ready' | 'error';
+
 const SEARCH_RADIUS_METERS = 800;
 const MAX_RESULTS = 12;
+const STOPS_DATABASE = 'stops.sqlite';
+const STOPS_ASSET = require('@/assets/data/stops.sqlite');
 
 const formatDistance = (meters: number) => {
   if (meters >= 1000) {
@@ -36,6 +51,13 @@ const formatDistance = (meters: number) => {
     return `${km.toFixed(km >= 10 ? 0 : 1)} km`;
   }
   return `${Math.round(meters / 10) * 10} m`;
+};
+
+const formatRelativeMinutes = (minutes: number) => {
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  return `${hours}h ${minutes % 60}m ago`;
 };
 
 const toRadians = (value: number) => (value * Math.PI) / 180;
@@ -50,7 +72,8 @@ const haversineMeters = (lat1: number, lon1: number, lat2: number, lon2: number)
   return radius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
-export default function HomeScreen() {
+function HomeScreenContent() {
+  const db = useSQLiteContext();
   const insets = useSafeAreaInsets();
   const background = useThemeColor({ light: undefined, dark: undefined }, 'background');
   const surface = useThemeColor({ light: undefined, dark: undefined }, 'surface');
@@ -66,6 +89,24 @@ export default function HomeScreen() {
   const [permissionState, setPermissionState] = useState<PermissionState>('unknown');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [feedStatus, setFeedStatus] = useState<FeedStatus>('idle');
+  const [feedUpdatedAt, setFeedUpdatedAt] = useState<string | null>(null);
+
+  const fetchFeedSummary = useCallback(async () => {
+    setFeedStatus('loading');
+    try {
+      const response = await fetch(dataUrl('buses/sheffield-gtfsrt.json'));
+      if (!response.ok) {
+        throw new Error('Unable to load live bus feed.');
+      }
+      const data = (await response.json()) as { summary?: { generatedAt?: string } };
+      setFeedUpdatedAt(data.summary?.generatedAt ?? null);
+      setFeedStatus('ready');
+    } catch (error) {
+      console.warn('Failed to fetch live bus feed:', error);
+      setFeedStatus('error');
+    }
+  }, []);
 
   const fetchNearbyStops = useCallback(async () => {
     setLoading(true);
@@ -91,49 +132,28 @@ export default function HomeScreen() {
       });
 
       const { latitude, longitude } = position.coords;
-      const query = `[out:json];node["highway"="bus_stop"](around:${SEARCH_RADIUS_METERS},${latitude},${longitude});out;`;
-      const response = await fetch(
-        `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`,
+      const latRange = SEARCH_RADIUS_METERS / 111_320;
+      const lonRange = SEARCH_RADIUS_METERS / (111_320 * Math.cos(toRadians(latitude)));
+
+      const rows = await db.getAllAsync<StopRow>(
+        `SELECT stop_id, name, code, area, lat, lon
+         FROM stops
+         WHERE lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?`,
+        [latitude - latRange, latitude + latRange, longitude - lonRange, longitude + lonRange],
       );
-      if (!response.ok) {
-        throw new Error('Unable to load nearby stops.');
-      }
-      const data = (await response.json()) as {
-        elements?: Array<{
-          id: number;
-          lat: number;
-          lon: number;
-          tags?: Record<string, string>;
-        }>;
-      };
 
-      const elements = data.elements ?? [];
-      const parsedStops = elements
-        .map((element) => {
-          const tags = element.tags ?? {};
-          const routesRaw = tags.route_ref ?? tags.routes ?? '';
-          const routes = routesRaw
-            .split(/[;,]/)
-            .map((route) => route.trim())
-            .filter(Boolean);
-          const stopCode = tags.local_ref ?? tags.ref ?? tags['ref:platform'];
-          const address = stopCode ? `Stop code ${stopCode}` : tags.operator ?? 'Nearby stop';
-
-          const distanceMeters = haversineMeters(
-            latitude,
-            longitude,
-            element.lat,
-            element.lon,
-          );
-
+      const parsedStops = rows
+        .map((row) => {
+          const distanceMeters = haversineMeters(latitude, longitude, row.lat, row.lon);
           return {
-            id: String(element.id),
-            name: tags.name ?? 'Bus stop',
-            address,
+            id: row.stop_id,
+            name: row.name,
+            code: row.code ?? null,
+            area: row.area ?? null,
             distanceMeters,
-            routes,
           } satisfies BusStop;
         })
+        .filter((stop) => stop.distanceMeters <= SEARCH_RADIUS_METERS)
         .sort((a, b) => a.distanceMeters - b.distanceMeters)
         .slice(0, MAX_RESULTS);
 
@@ -144,19 +164,30 @@ export default function HomeScreen() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [db]);
 
   useEffect(() => {
     fetchNearbyStops();
-  }, [fetchNearbyStops]);
+    fetchFeedSummary();
+  }, [fetchNearbyStops, fetchFeedSummary]);
 
   const sortedStops = useMemo(
     () => [...stops].sort((a, b) => a.distanceMeters - b.distanceMeters),
     [stops],
   );
 
+  const feedLabel = useMemo(() => {
+    if (feedStatus === 'loading') return 'Updating live feed...';
+    if (feedStatus === 'error') return 'Live feed unavailable';
+    if (!feedUpdatedAt) return 'Live feed ready';
+
+    const minutes = Math.max(0, Math.round((Date.now() - new Date(feedUpdatedAt).getTime()) / 60000));
+    return `Live feed updated ${formatRelativeMinutes(minutes)}`;
+  }, [feedStatus, feedUpdatedAt]);
+
   const renderStop: ListRenderItem<BusStop> = ({ item }) => {
     const distanceLabel = formatDistance(item.distanceMeters);
+    const subtitle = item.area ?? (item.code ? `Stop code ${item.code}` : 'Nearby stop');
     return (
       <View
         style={[
@@ -169,37 +200,16 @@ export default function HomeScreen() {
         ]}>
         <View style={styles.cardLeft}>
           <ThemedText style={[styles.stopName, { color: text }]}>{item.name}</ThemedText>
-          <ThemedText style={[styles.stopAddress, { color: muted }]}>{item.address}</ThemedText>
-          <View style={styles.routesRow}>
-            <Text style={[styles.nextLabel, { color: muted }]}>Routes:</Text>
-            {item.routes.length > 0 ? (
-              <View style={styles.routeList}>
-                {item.routes.map((route) => (
-                  <View key={`${item.id}-${route}`} style={[styles.routePill, { backgroundColor: pill }]}>
-                    <Text style={[styles.routeText, { color: primary }]}>{route}</Text>
-                  </View>
-                ))}
-              </View>
-            ) : (
-              <Text style={[styles.routesMissing, { color: muted }]}>Unavailable</Text>
-            )}
-          </View>
+          <ThemedText style={[styles.stopAddress, { color: muted }]}>{subtitle}</ThemedText>
+          {item.code ? (
+            <View style={[styles.routePill, { backgroundColor: pill }]}> 
+              <Text style={[styles.routeText, { color: primary }]}>{item.code}</Text>
+            </View>
+          ) : null}
         </View>
         <View style={styles.cardRight}>
-          <Text
-            style={[
-              styles.timeText,
-              { color: success },
-            ]}>
-            {distanceLabel}
-          </Text>
-          <Text
-            style={[
-              styles.timeSubText,
-              { color: muted },
-            ]}>
-            away
-          </Text>
+          <Text style={[styles.timeText, { color: success }]}>{distanceLabel}</Text>
+          <Text style={[styles.timeSubText, { color: muted }]}>away</Text>
         </View>
       </View>
     );
@@ -236,6 +246,7 @@ export default function HomeScreen() {
             </Pressable>
           </View>
         </View>
+        <ThemedText style={[styles.feedStatus, { color: muted }]}>{feedLabel}</ThemedText>
         <FlatList
           data={sortedStops}
           keyExtractor={(item) => item.id}
@@ -245,29 +256,29 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyState}>
-              <ThemedText style={[styles.emptyTitle, { color: text }]}>
+              <ThemedText style={[styles.emptyTitle, { color: text }]}> 
                 {loading ? 'Finding nearby stops...' : 'No stops available'}
               </ThemedText>
               {permissionState === 'denied' ? (
                 <>
-                  <ThemedText style={[styles.emptyBody, { color: muted }]}>
+                  <ThemedText style={[styles.emptyBody, { color: muted }]}> 
                     Enable location access to see the closest stops.
                   </ThemedText>
                   {Platform.OS === 'web' ? (
-                    <ThemedText style={[styles.emptyBody, { color: muted }]}>
+                    <ThemedText style={[styles.emptyBody, { color: muted }]}> 
                       Check your browser site settings to allow location access.
                     </ThemedText>
                   ) : (
                     <Pressable
                       accessibilityRole="button"
                       onPress={() => Linking.openSettings()}
-                      style={[styles.emptyButton, { backgroundColor: surface, borderColor: border }]}>
+                      style={[styles.emptyButton, { backgroundColor: surface, borderColor: border }]}> 
                       <Text style={[styles.emptyButtonText, { color: primary }]}>Open Settings</Text>
                     </Pressable>
                   )}
                 </>
               ) : (
-                <ThemedText style={[styles.emptyBody, { color: muted }]}>
+                <ThemedText style={[styles.emptyBody, { color: muted }]}> 
                   {errorMessage ?? 'Pull to refresh or try again in a moment.'}
                 </ThemedText>
               )}
@@ -276,6 +287,14 @@ export default function HomeScreen() {
         />
       </ThemedView>
     </SafeAreaView>
+  );
+}
+
+export default function HomeScreen() {
+  return (
+    <SQLiteProvider databaseName={STOPS_DATABASE} assetSource={{ assetId: STOPS_ASSET }}>
+      <HomeScreenContent />
+    </SQLiteProvider>
   );
 }
 
@@ -292,7 +311,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   headerTitleRow: {
     flexDirection: 'row',
@@ -307,6 +326,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  feedStatus: {
+    marginBottom: 12,
+    fontSize: 12,
   },
   locationButton: {
     width: 36,
@@ -351,25 +374,8 @@ const styles = StyleSheet.create({
   stopAddress: {
     fontSize: 13,
   },
-  routesRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  nextLabel: {
-    fontSize: 13,
-    marginRight: 4,
-  },
-  routeList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-  },
-  routesMissing: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
   routePill: {
+    alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,

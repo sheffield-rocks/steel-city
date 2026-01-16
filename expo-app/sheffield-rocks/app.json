@@ -52,6 +52,7 @@
     },
     "extra": {
       "router": {},
+      "dataBaseUrl": "https://raw.githubusercontent.com/sheffield-rocks/public-data/main/data",
       "eas": {
         "projectId": "10596453-850d-474a-a7b8-d96bc52a1cfc"
       }

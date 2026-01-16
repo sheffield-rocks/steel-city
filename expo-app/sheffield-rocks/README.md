@@ -25,6 +25,23 @@ In the output, you'll find options to open the app in:
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+## Data sources
+
+This prototype reads from the public data repo:
+
+```
+https://raw.githubusercontent.com/sheffield-rocks/public-data/main/data
+```
+
+Override the base URL with `EXPO_PUBLIC_DATA_BASE_URL` or by editing `expo.extra.dataBaseUrl` in `app.json`.
+
+### Bundled SQLite snapshots
+
+For offline-first lookups, the app bundles SQLite snapshots in `assets/data/`:
+
+- `events.sqlite` — latest events snapshot from the public data repo.
+- `stops.sqlite` — local stop index for nearby lookups (currently a small seed set; replace with a full dataset when available).
+
 ## Workflows
 
 This project is configured to use [EAS Workflows](https://docs.expo.dev/eas/workflows/get-started/) to automate some development and release processes. These commands are set up in [`package.json`](./package.json) and can be run using NPM scripts in your terminal.
