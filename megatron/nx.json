@@ -13,7 +13,10 @@
       "dependsOn": ["^build"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "options": {
+        "eslintConfig": "eslint.config.mjs"
+      }
     },
     "test": {
       "dependsOn": ["^test"]

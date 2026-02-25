@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import {
   CSV_STORE,
   FEED_CONFIG_REPOSITORY,
@@ -15,6 +15,7 @@ import { ProtobufGtfsRealtimeDecoder } from './realtime/protobuf-gtfs-rt.decoder
 import { FileSystemStagingStore } from './staging/file-system-staging.store';
 import { PrismaTransportRepositoryFactory } from './prisma/prisma-repository.factory';
 
+@Global()
 @Module({
   providers: [
     YamlFeedConfigRepository,

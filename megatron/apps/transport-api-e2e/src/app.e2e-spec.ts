@@ -16,10 +16,14 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('/health (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/health')
       .expect(200)
-      .expect('Hello World from bus');
+      .expect((response) => {
+        if (!response.body?.status) {
+          throw new Error('Expected health status in response');
+        }
+      });
   });
 });
