@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model GtfsFeed {
+  feedId       String   @id @map("feed_id")
+  versionHash  String?  @map("version_hash")
+  fetchedAt    DateTime? @map("fetched_at")
+  loadedAt     DateTime? @map("loaded_at")
+
+  @@map("gtfs_feed")
+}
+
+model Agency {
+  id            String  @id @default(cuid())
+  feedId        String  @map("feed_id")
+  agencyId      String? @map("agency_id")
+  agencyName    String? @map("agency_name")
+  agencyUrl     String? @map("agency_url")
+  agencyTimezone String? @map("agency_timezone")
+
+  @@index([feedId])
+  @@map("agency")
+}
+
+model Stop {
+  id        String  @id @default(cuid())
+  feedId    String  @map("feed_id")
+  stopId    String  @map("stop_id")
+  stopName  String? @map("stop_name")
+  stopLat   Float?  @map("stop_lat")
+  stopLon   Float?  @map("stop_lon")
+
+  @@index([feedId])
+  @@index([feedId, stopId])
+  @@map("stops")
+}
+
+model Route {
+  id            String  @id @default(cuid())
+  feedId        String  @map("feed_id")
+  routeId       String  @map("route_id")
+  routeShortName String? @map("route_short_name")
+  routeLongName  String? @map("route_long_name")
+
+  @@index([feedId])
+  @@index([feedId, routeId])
+  @@map("routes")
+}
+
+model Trip {
+  id           String  @id @default(cuid())
+  feedId       String  @map("feed_id")
+  tripId       String  @map("trip_id")
+  routeId      String? @map("route_id")
+  serviceId    String? @map("service_id")
+  tripHeadsign String? @map("trip_headsign")
+  directionId  Int?    @map("direction_id")
+
+  @@index([feedId])
+  @@index([feedId, tripId])
+  @@map("trips")
+}
+
+model StopTime {
+  id            String  @id @default(cuid())
+  feedId        String  @map("feed_id")
+  tripId        String? @map("trip_id")
+  stopId        String? @map("stop_id")
+  arrivalTime   String? @map("arrival_time")
+  departureTime String? @map("departure_time")
+  stopSequence  Int?    @map("stop_sequence")
+
+  @@index([feedId])
+  @@index([feedId, stopId])
+  @@index([feedId, tripId])
+  @@index([stopId])
+  @@map("stop_times")
+}
+
+model Calendar {
+  id         String  @id @default(cuid())
+  feedId     String  @map("feed_id")
+  serviceId  String? @map("service_id")
+  monday     Int?    @map("monday")
+  tuesday    Int?    @map("tuesday")
+  wednesday  Int?    @map("wednesday")
+  thursday   Int?    @map("thursday")
+  friday     Int?    @map("friday")
+  saturday   Int?    @map("saturday")
+  sunday     Int?    @map("sunday")
+  startDate  String? @map("start_date")
+  endDate    String? @map("end_date")
+
+  @@index([feedId])
+  @@map("calendar")
+}
+
+model CalendarDate {
+  id            String  @id @default(cuid())
+  feedId        String  @map("feed_id")
+  serviceId     String? @map("service_id")
+  date          String? @map("date")
+  exceptionType Int?    @map("exception_type")
+
+  @@index([feedId])
+  @@map("calendar_dates")
+}
+
+model Shape {
+  id            String  @id @default(cuid())
+  feedId        String  @map("feed_id")
+  shapeId       String? @map("shape_id")
+  shapePtLat    Float?  @map("shape_pt_lat")
+  shapePtLon    Float?  @map("shape_pt_lon")
+  shapePtSequence Int?  @map("shape_pt_sequence")
+
+  @@index([feedId])
+  @@map("shapes")
+}
+
+model VehiclePosition {
+  id         String   @id @default(cuid())
+  feedId     String   @map("feed_id")
+  vehicleId  String   @map("vehicle_id")
+  tripId     String?  @map("trip_id")
+  routeId    String?  @map("route_id")
+  timestamp  DateTime @map("timestamp")
+  lat        Float    @map("lat")
+  lon        Float    @map("lon")
+  bearing    Float?   @map("bearing")
+  ingestedAt DateTime @map("ingested_at")
+
+  @@index([feedId])
+  @@index([feedId, vehicleId])
+  @@index([feedId, timestamp])
+  @@index([timestamp])
+  @@map("vehicle_positions")
+}
+
+model LatestVehiclePosition {
+  id         Int      @id @default(autoincrement())
+  feedId     String   @map("feed_id")
+  vehicleId  String   @map("vehicle_id")
+  tripId     String?  @map("trip_id")
+  routeId    String?  @map("route_id")
+  timestamp  DateTime @map("timestamp")
+  lat        Float    @map("lat")
+  lon        Float    @map("lon")
+  bearing    Float?   @map("bearing")
+  ingestedAt DateTime @map("ingested_at")
+
+  @@index([feedId])
+  @@index([feedId, vehicleId])
+  @@unique([feedId, vehicleId])
+  @@index([timestamp])
+  @@map("latest_vehicle_positions")
+}

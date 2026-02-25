@@ -1,11 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TransportApplicationModule } from '@transport/application';
 import { TransportInfrastructureModule } from '@transport/infrastructure';
-import { TransportController } from './transport.controller';
 
 @Module({
   imports: [TransportInfrastructureModule, TransportApplicationModule],
-  controllers: [TransportController],
-  providers: [],
 })
-export class AppModule {}
+export class TransportCliModule {}

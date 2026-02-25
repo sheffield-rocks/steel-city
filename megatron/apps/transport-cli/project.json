@@ -1,0 +1,60 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "transport-cli",
+  "projectType": "application",
+  "sourceRoot": "apps/transport-cli/src",
+  "tags": ["scope:transport", "type:app"],
+  "targets": {
+    "build": {
+      "executor": "@nx/nest:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/transport-cli",
+        "main": "apps/transport-cli/src/main.ts",
+        "tsConfig": "apps/transport-cli/tsconfig.app.json",
+        "assets": []
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["apps/transport-cli/**/*.ts"]
+      }
+    },
+    "static-fetch": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node dist/apps/transport-cli/main.js static-fetch"
+      }
+    },
+    "static-load": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node dist/apps/transport-cli/main.js static-load"
+      }
+    },
+    "rt-collect": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node dist/apps/transport-cli/main.js rt-collect"
+      }
+    },
+    "rt-import": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node dist/apps/transport-cli/main.js rt-import"
+      }
+    },
+    "rt-prune": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node dist/apps/transport-cli/main.js rt-prune"
+      }
+    }
+  }
+}
