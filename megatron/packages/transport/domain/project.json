@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "transport-domain",
+  "projectType": "library",
+  "sourceRoot": "packages/transport/domain/src",
+  "tags": ["scope:transport", "type:domain"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/transport/domain",
+        "main": "packages/transport/domain/src/index.ts",
+        "tsConfig": "packages/transport/domain/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["packages/transport/domain/**/*.ts"]
+      }
+    }
+  }
+}

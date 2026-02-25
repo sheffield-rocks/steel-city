@@ -1,0 +1,8 @@
+
+[0m[7m[1m[31m NX [39m[22m[27m[0m  [31mJest: Failed to parse the TypeScript config file /home/will/sheffield.rocks/megatron/apps/transport-api/jest.config.ts[39m
+
+  TSError: ⨯ Unable to compile TypeScript:
+apps/transport-api/jest.config.ts(2,33): error TS2732: Cannot find module '../../tsconfig.base.json'. Consider using '--resolveJsonModule' to import module with '.json' extension.
+
+Pass --verbose to see the stacktrace.
+

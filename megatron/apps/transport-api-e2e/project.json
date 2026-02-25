@@ -1,0 +1,18 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "transport-api-e2e",
+  "projectType": "application",
+  "sourceRoot": "apps/transport-api-e2e/src",
+  "implicitDependencies": ["transport-api"],
+  "tags": ["scope:transport", "type:e2e"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/transport-api-e2e"],
+      "options": {
+        "jestConfig": "apps/transport-api-e2e/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

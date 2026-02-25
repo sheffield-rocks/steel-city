@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "references": [
+    { "path": "./apps/transport-api/tsconfig.app.json" },
+    { "path": "./apps/transport-api/tsconfig.spec.json" },
+    { "path": "./apps/transport-api-e2e/tsconfig.json" },
+    { "path": "./packages/transport/domain/tsconfig.lib.json" },
+    { "path": "./packages/transport/application/tsconfig.lib.json" },
+    { "path": "./packages/transport/infrastructure/tsconfig.lib.json" }
+  ]
+}

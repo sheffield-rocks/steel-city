@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "transport-infrastructure",
+  "projectType": "library",
+  "sourceRoot": "packages/transport/infrastructure/src",
+  "tags": ["scope:transport", "type:infrastructure"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/transport/infrastructure",
+        "main": "packages/transport/infrastructure/src/index.ts",
+        "tsConfig": "packages/transport/infrastructure/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["packages/transport/infrastructure/**/*.ts"]
+      }
+    }
+  }
+}

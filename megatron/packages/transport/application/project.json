@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "transport-application",
+  "projectType": "library",
+  "sourceRoot": "packages/transport/application/src",
+  "tags": ["scope:transport", "type:application"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/transport/application",
+        "main": "packages/transport/application/src/index.ts",
+        "tsConfig": "packages/transport/application/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["packages/transport/application/**/*.ts"]
+      }
+    }
+  }
+}

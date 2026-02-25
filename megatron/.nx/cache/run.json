@@ -1,0 +1,32 @@
+{
+  "run": {
+    "command": "nx test transport-api-e2e",
+    "startTime": "2026-02-25T13:37:18.797Z",
+    "endTime": "2026-02-25T13:37:22.905Z",
+    "inner": false
+  },
+  "tasks": [
+    {
+      "taskId": "transport-api:test",
+      "target": "test",
+      "projectName": "transport-api",
+      "hash": "18249094986588062508",
+      "startTime": "2026-02-25T13:37:18.808Z",
+      "endTime": "2026-02-25T13:37:21.266Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    },
+    {
+      "taskId": "transport-api-e2e:test",
+      "target": "test",
+      "projectName": "transport-api-e2e",
+      "hash": "13915450013748851812",
+      "startTime": "2026-02-25T13:37:21.267Z",
+      "endTime": "2026-02-25T13:37:22.905Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    }
+  ]
+}

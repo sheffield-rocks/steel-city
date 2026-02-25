@@ -1,0 +1,11 @@
+
+[0m[7m[1m[31m NX [39m[22m[27m[0m  [31m[31m[1m[1m● [22m[1mValidation Error[22m:[39m[31m[39m
+
+[31m[39m
+[31m  Configuration options [1mtestMatch[22m and [1mtestRegex[22m cannot be used together.[39m
+[31m[39m
+[31m  [1mConfiguration Documentation:[22m[39m
+[31m  https://jestjs.io/docs/configuration[39m
+[31m[39m
+Pass --verbose to see the stacktrace.
+

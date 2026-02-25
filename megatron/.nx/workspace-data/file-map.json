@@ -1,0 +1,275 @@
+{
+  "version": "6.0",
+  "nxVersion": "19.8.4",
+  "deps": {
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/platform-express": "^11.0.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.18.0",
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/schematics": "^11.0.0",
+    "@nestjs/testing": "^11.0.1",
+    "@nx/eslint": "19.8.4",
+    "@nx/eslint-plugin": "19.8.4",
+    "@nx/jest": "19.8.4",
+    "@nx/js": "19.8.4",
+    "@nx/nest": "19.8.4",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.10.7",
+    "@types/supertest": "^6.0.2",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "globals": "^16.0.0",
+    "jest": "^30.0.0",
+    "nx": "19.8.4",
+    "prettier": "^3.4.2",
+    "source-map-support": "^0.5.21",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  },
+  "pathMappings": {
+    "@transport/domain": [
+      "packages/transport/domain/src/index.ts"
+    ],
+    "@transport/domain/*": [
+      "packages/transport/domain/src/lib/*"
+    ],
+    "@transport/application": [
+      "packages/transport/application/src/index.ts"
+    ],
+    "@transport/application/*": [
+      "packages/transport/application/src/lib/*"
+    ],
+    "@transport/infrastructure": [
+      "packages/transport/infrastructure/src/index.ts"
+    ],
+    "@transport/infrastructure/*": [
+      "packages/transport/infrastructure/src/lib/*"
+    ]
+  },
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": ".prettierrc",
+        "hash": "9555875142989992828"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "9430166341120122740"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "1243867768463288200"
+      },
+      {
+        "file": "eslint.config.mjs",
+        "hash": "2884353479579665869"
+      },
+      {
+        "file": "package.json",
+        "hash": "15736898683891846059"
+      },
+      {
+        "file": "README.md",
+        "hash": "10741870943097893083"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "12634402967133909834"
+      },
+      {
+        "file": "tsconfig.build.json",
+        "hash": "14203662115973005645"
+      },
+      {
+        "file": "nest-cli.json",
+        "hash": "14822780138477715896"
+      },
+      {
+        "file": "test/jest-e2e.json",
+        "hash": "7570273541430074424"
+      },
+      {
+        "file": "nx.json",
+        "hash": "16544563281849031386"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "3944174013930265201"
+      },
+      {
+        "file": "AGENTS.md",
+        "hash": "14558150594789033313"
+      },
+      {
+        "file": "pnpm-lock.yaml",
+        "hash": "1575961419295572807"
+      }
+    ],
+    "projectFileMap": {
+      "transport-application": [
+        {
+          "file": "packages/transport/application/project.json",
+          "hash": "14069407210273493790"
+        },
+        {
+          "file": "packages/transport/application/src/index.ts",
+          "hash": "6451104426798693805"
+        },
+        {
+          "file": "packages/transport/application/src/lib/transport-greeting.ts",
+          "hash": "9826254382974426411",
+          "deps": [
+            "transport-domain"
+          ]
+        },
+        {
+          "file": "packages/transport/application/tsconfig.lib.json",
+          "hash": "13720551503687695834"
+        }
+      ],
+      "transport-api-e2e": [
+        {
+          "file": "apps/transport-api-e2e/jest.config.ts",
+          "hash": "5862542202215136244",
+          "deps": [
+            "npm:ts-jest"
+          ]
+        },
+        {
+          "file": "apps/transport-api-e2e/project.json",
+          "hash": "9147967080796609661"
+        },
+        {
+          "file": "apps/transport-api-e2e/src/app.e2e-spec.ts",
+          "hash": "15814073922374464270",
+          "deps": [
+            "npm:@nestjs/testing",
+            "npm:@nestjs/common",
+            "npm:supertest",
+            "transport-api"
+          ]
+        },
+        {
+          "file": "apps/transport-api-e2e/tsconfig.json",
+          "hash": "11501605096306981420"
+        },
+        {
+          "file": "apps/transport-api-e2e/tsconfig.spec.json",
+          "hash": "12533335074272685845"
+        }
+      ],
+      "transport-api": [
+        {
+          "file": "apps/transport-api/jest.config.ts",
+          "hash": "2843638220803213322",
+          "deps": [
+            "npm:ts-jest"
+          ]
+        },
+        {
+          "file": "apps/transport-api/project.json",
+          "hash": "17796134488480775172"
+        },
+        {
+          "file": "apps/transport-api/src/app/app.controller.spec.ts",
+          "hash": "18137209351116127582",
+          "deps": [
+            "npm:@nestjs/testing"
+          ]
+        },
+        {
+          "file": "apps/transport-api/src/app/app.controller.ts",
+          "hash": "4552329938751326480",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "apps/transport-api/src/app/app.module.ts",
+          "hash": "11673476679848632172",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "apps/transport-api/src/app/app.service.ts",
+          "hash": "16778962609794070708",
+          "deps": [
+            "npm:@nestjs/common",
+            "transport-application"
+          ]
+        },
+        {
+          "file": "apps/transport-api/src/main.ts",
+          "hash": "16692799974967409767",
+          "deps": [
+            "npm:@nestjs/core"
+          ]
+        },
+        {
+          "file": "apps/transport-api/tsconfig.app.json",
+          "hash": "5578477586335095587"
+        },
+        {
+          "file": "apps/transport-api/tsconfig.json",
+          "hash": "5892108916923225577"
+        },
+        {
+          "file": "apps/transport-api/tsconfig.spec.json",
+          "hash": "711039110391540786"
+        }
+      ],
+      "transport-infrastructure": [
+        {
+          "file": "packages/transport/infrastructure/project.json",
+          "hash": "15612976422029279663"
+        },
+        {
+          "file": "packages/transport/infrastructure/src/index.ts",
+          "hash": "15738090010383895720"
+        },
+        {
+          "file": "packages/transport/infrastructure/src/lib/in-memory-transport-store.ts",
+          "hash": "12427597661117269020",
+          "deps": [
+            "transport-domain"
+          ]
+        },
+        {
+          "file": "packages/transport/infrastructure/tsconfig.lib.json",
+          "hash": "13720551503687695834"
+        }
+      ],
+      "transport-domain": [
+        {
+          "file": "packages/transport/domain/project.json",
+          "hash": "10273336972387894167"
+        },
+        {
+          "file": "packages/transport/domain/src/index.ts",
+          "hash": "9581065542136630967"
+        },
+        {
+          "file": "packages/transport/domain/src/lib/transport-mode.ts",
+          "hash": "746483465060754084"
+        },
+        {
+          "file": "packages/transport/domain/tsconfig.lib.json",
+          "hash": "13720551503687695834"
+        }
+      ]
+    }
+  }
+}

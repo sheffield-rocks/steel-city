@@ -1,0 +1,39 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "transport-api",
+  "projectType": "application",
+  "sourceRoot": "apps/transport-api/src",
+  "tags": ["scope:transport", "type:app"],
+  "targets": {
+    "build": {
+      "executor": "@nx/nest:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/transport-api",
+        "main": "apps/transport-api/src/main.ts",
+        "tsConfig": "apps/transport-api/tsconfig.app.json",
+        "assets": []
+      }
+    },
+    "serve": {
+      "executor": "@nx/nest:serve",
+      "options": {
+        "buildTarget": "transport-api:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["apps/transport-api/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/transport-api"],
+      "options": {
+        "jestConfig": "apps/transport-api/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}
