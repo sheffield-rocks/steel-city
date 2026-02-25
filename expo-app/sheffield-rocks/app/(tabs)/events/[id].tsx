@@ -8,6 +8,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { EventsDatabaseProvider } from '@/components/events-database-provider';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { mockEvents } from '@/constants/mock-data';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 type EventRow = {
@@ -59,7 +60,8 @@ function EventDetailContent() {
         [Number(eventId)],
       );
       if (!row) {
-        setEvent(null);
+        const fallback = mockEvents.find((item) => item.id === Number(eventId)) ?? null;
+        setEvent(fallback);
         return;
       }
       setEvent({
@@ -71,7 +73,8 @@ function EventDetailContent() {
       });
     } catch (error) {
       console.warn('Failed to load event detail:', error);
-      setEvent(null);
+      const fallback = mockEvents.find((item) => item.id === Number(eventId)) ?? null;
+      setEvent(fallback);
     } finally {
       setLoading(false);
     }
